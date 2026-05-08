@@ -7,6 +7,9 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 
+// Test mode flag
+import '../../features/auth/providers/auth_provider.dart' show TEST_MODE;
+
 // Adherent
 import '../../features/adherent/adherent_shell.dart';
 import '../../features/adherent/home/screens/home_screen.dart';
@@ -46,9 +49,12 @@ import '../../features/adherent/progress/progress_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 
 GoRouter createAppRouter(AuthProvider auth, bool showOnboarding) => GoRouter(
-  initialLocation: showOnboarding ? '/onboarding' : '/login',
+  initialLocation: (showOnboarding ? '/onboarding' : (TEST_MODE ? '/member' : '/login')),
   refreshListenable: auth,
   redirect: (context, state) {
+    // Test mode: skip auth checks
+    if (TEST_MODE) return null;
+
     final status = auth.status;
 
     if (status == AuthStatus.unknown) return null; // still loading

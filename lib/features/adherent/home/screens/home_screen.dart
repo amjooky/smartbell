@@ -16,6 +16,7 @@ import '../../../../shared/widgets/dark_card.dart';
 import '../../../../shared/widgets/gym_badge.dart';
 import '../../../../core/network/connectivity_service.dart';
 import '../../../adherent/training/offline_training_repository.dart';
+import '../../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class AdherentHomeScreen extends StatefulWidget {
   const AdherentHomeScreen({super.key});
@@ -50,6 +51,20 @@ class _AdherentHomeScreenState extends State<AdherentHomeScreen> {
     setState(() => _loading = true);
     final user = context.read<AuthProvider>().user;
     if (user == null) { setState(() => _loading = false); return; }
+    
+    // Test mode: load mock data
+    if (TEST_MODE) {
+      _checkinsThisMonth = 12;
+      _loyaltyPoints = 450;
+      _daysRemaining = 45;
+      _totalDays = 90;
+      _planName = 'Premium';
+      _nextCourseName = 'Yoga Avancé';
+      _nextCourseTime = '18:00';
+      setState(() => _loading = false);
+      return;
+    }
+    
     final dio = DioClient.instance.dio;
 
     try {

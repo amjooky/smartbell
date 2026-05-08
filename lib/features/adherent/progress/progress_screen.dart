@@ -11,6 +11,7 @@ import '../../../features/auth/providers/auth_provider.dart';
 import '../../../shared/models/measurement.dart';
 import 'add_measurement_sheet.dart';
 import 'progress_service.dart';
+import '../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 // ─── Period enum ──────────────────────────────────────────────────────────────
 
@@ -56,6 +57,52 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final user = context.read<AuthProvider>().user;
     if (user == null) {
       setState(() => _loading = false);
+      return;
+    }
+
+    // Test mode: load mock measurements
+    if (TEST_MODE) {
+      final now = DateTime.now();
+      setState(() {
+        _measurements = [
+          Measurement(
+            id: 1,
+            memberId: 1,
+            date: now.subtract(const Duration(days: 30)),
+            weight: 75.5,
+            height: 175,
+          ),
+          Measurement(
+            id: 2,
+            memberId: 1,
+            date: now.subtract(const Duration(days: 20)),
+            weight: 75.0,
+            height: 175,
+          ),
+          Measurement(
+            id: 3,
+            memberId: 1,
+            date: now.subtract(const Duration(days: 10)),
+            weight: 74.2,
+            height: 175,
+          ),
+          Measurement(
+            id: 4,
+            memberId: 1,
+            date: now.subtract(const Duration(days: 5)),
+            weight: 73.8,
+            height: 175,
+          ),
+          Measurement(
+            id: 5,
+            memberId: 1,
+            date: now,
+            weight: 73.5,
+            height: 175,
+          ),
+        ];
+        _loading = false;
+      });
       return;
     }
 

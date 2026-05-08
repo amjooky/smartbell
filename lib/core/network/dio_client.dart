@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 import 'jwt_interceptor.dart';
+import '../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class DioClient {
   DioClient._();
@@ -22,7 +23,25 @@ class DioClient {
         },
       ),
     );
-    _dio.interceptors.add(JwtInterceptor());
+    
+    // Test mode: block all API calls
+    if (TEST_MODE) {
+      _dio.interceptors.add(InterceptorsWrapper(
+        onRequest: (options, handler) {
+          // Block all requests in test mode
+          handler.reject(
+            DioException(
+              requestOptions: options,
+              type: DioExceptionType.unknown,
+              error: 'API calls disabled in test mode',
+            ),
+          );
+        },
+      ));
+    } else {
+      _dio.interceptors.add(JwtInterceptor());
+    }
+    
     _dio.interceptors.add(LogInterceptor(
       requestBody: false,
       responseBody: false,

@@ -8,6 +8,7 @@ import '../../../../core/constants/api_constants.dart';
 import '../../../../features/auth/providers/auth_provider.dart';
 import '../../../../shared/widgets/stat_card.dart';
 import '../../../../shared/widgets/gym_badge.dart';
+import '../../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class CoachDashboardScreen extends StatefulWidget {
   const CoachDashboardScreen({super.key});
@@ -37,6 +38,39 @@ class _CoachDashboardScreenState extends State<CoachDashboardScreen> {
     setState(() => _loading = true);
     final user = context.read<AuthProvider>().user;
     if (user == null) { setState(() => _loading = false); return; }
+    
+    // Test mode: load mock data
+    if (TEST_MODE) {
+      _activeMembers = 45;
+      _todayCourses = 3;
+      _monthHours = 28;
+      _todayCoursesList = [
+        {
+          'id': 1,
+          'name': 'Yoga Avancé',
+          'dayOfWeek': 'MONDAY',
+          'startTime': '18:00',
+          'endTime': '19:00',
+        },
+        {
+          'id': 2,
+          'name': 'HIIT Training',
+          'dayOfWeek': 'TUESDAY',
+          'startTime': '19:00',
+          'endTime': '20:00',
+        },
+        {
+          'id': 3,
+          'name': 'Pilates',
+          'dayOfWeek': 'WEDNESDAY',
+          'startTime': '08:00',
+          'endTime': '09:00',
+        },
+      ];
+      setState(() => _loading = false);
+      return;
+    }
+    
     final dio = DioClient.instance.dio;
     final today = _days[DateTime.now().weekday - 1];
 

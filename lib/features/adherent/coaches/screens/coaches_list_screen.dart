@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../models/coach_model.dart';
+import '../../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class AdherentCoachesScreen extends StatefulWidget {
   const AdherentCoachesScreen({super.key});
@@ -27,6 +28,49 @@ class _AdherentCoachesScreenState extends State<AdherentCoachesScreen> {
       _loading = true;
       _error = null;
     });
+    
+    // Test mode: load mock coaches
+    if (TEST_MODE) {
+      setState(() {
+        _coaches = [
+          CoachModel(
+            id: 1,
+            firstName: 'Marie',
+            lastName: 'Dupont',
+            email: 'marie@smartbell.com',
+            availabilityStatus: 'AVAILABLE',
+            specialization: 'Yoga',
+          ),
+          CoachModel(
+            id: 2,
+            firstName: 'Jean',
+            lastName: 'Martin',
+            email: 'jean@smartbell.com',
+            availabilityStatus: 'BUSY',
+            specialization: 'HIIT',
+          ),
+          CoachModel(
+            id: 3,
+            firstName: 'Sophie',
+            lastName: 'Bernard',
+            email: 'sophie@smartbell.com',
+            availabilityStatus: 'AVAILABLE',
+            specialization: 'Pilates',
+          ),
+          CoachModel(
+            id: 4,
+            firstName: 'Pierre',
+            lastName: 'Leroy',
+            email: 'pierre@smartbell.com',
+            availabilityStatus: 'AVAILABLE',
+            specialization: 'CrossFit',
+          ),
+        ];
+        _loading = false;
+      });
+      return;
+    }
+    
     try {
       final res = await ApiClient().dio.get('/users/by-role', queryParameters: {'role': 'ROLE_COACH', 'size': 50});
       final data = res.data;
@@ -50,8 +94,9 @@ class _AdherentCoachesScreenState extends State<AdherentCoachesScreen> {
     }
   }
 
-  Color _availabilityColor(String? status) {
-    switch (status?.toUpperCase()) {
+  Color _availabilityColor(CoachModel coach) {
+    final status = coach.availabilityStatus?.toUpperCase();
+    switch (status) {
       case 'AVAILABLE':   return AppColors.success;
       case 'BUSY':        return AppColors.warning;
       case 'UNAVAILABLE': return AppColors.error;
@@ -120,7 +165,7 @@ class _AdherentCoachesScreenState extends State<AdherentCoachesScreen> {
                             final coach = _coaches[i];
                             return _CoachCard(
                               coach: coach,
-                              availabilityColor: _availabilityColor(coach.availabilityStatus),
+                              availabilityColor: _availabilityColor(coach),
                               availabilityLabel: _availabilityLabel(coach.availabilityStatus),
                             );
                           },

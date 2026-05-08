@@ -7,6 +7,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../features/auth/providers/auth_provider.dart';
 import '../models/message.dart';
 import '../services/message_service.dart';
+import '../../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class ConversationsScreen extends StatefulWidget {
   const ConversationsScreen({super.key});
@@ -24,6 +25,38 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
 
   Future<void> _loadCoaches() async {
     setState(() => _loading = true);
+    
+    // Test mode: load mock coaches
+    if (TEST_MODE) {
+      setState(() {
+        _coaches = [
+          {
+            'id': 1,
+            'firstName': 'Marie',
+            'lastName': 'Dupont',
+            'email': 'marie@smartbell.com',
+            'specialization': 'Yoga',
+          },
+          {
+            'id': 2,
+            'firstName': 'Jean',
+            'lastName': 'Martin',
+            'email': 'jean@smartbell.com',
+            'specialization': 'HIIT',
+          },
+          {
+            'id': 3,
+            'firstName': 'Sophie',
+            'lastName': 'Bernard',
+            'email': 'sophie@smartbell.com',
+            'specialization': 'Pilates',
+          },
+        ];
+        _loading = false;
+      });
+      return;
+    }
+    
     try {
       final res = await DioClient.instance.dio.get('/coaches', queryParameters: {'size': 50});
       final data = res.data;

@@ -6,6 +6,7 @@ import '../../../../core/storage/validation_store.dart';
 import '../../../../features/auth/providers/auth_provider.dart';
 import '../../../../shared/widgets/offline_banner.dart';
 import '../models/nutrition_plan.dart';
+import '../../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class NutritionScreen extends StatefulWidget {
   const NutritionScreen({super.key});
@@ -103,6 +104,49 @@ class _NutritionScreenState extends State<NutritionScreen> {
   }
 
   Future<void> _loadFromBackendOrGenerate() async {
+    // Test mode: load mock nutrition plan
+    if (TEST_MODE) {
+      setState(() {
+        _plan = NutritionPlan(
+          id: 1,
+          name: 'Plan Nutritionnel Test',
+          targetCalories: 2200,
+          meals: [
+            Meal(
+              id: 1,
+              name: 'Petit-déjeuner',
+              type: 'BREAKFAST',
+              calories: 550,
+              macro: const Macro(proteins: 25, carbs: 60, fats: 15),
+            ),
+            Meal(
+              id: 2,
+              name: 'Déjeuner',
+              type: 'LUNCH',
+              calories: 700,
+              macro: const Macro(proteins: 40, carbs: 75, fats: 20),
+            ),
+            Meal(
+              id: 3,
+              name: 'Collation',
+              type: 'SNACK',
+              calories: 200,
+              macro: const Macro(proteins: 15, carbs: 20, fats: 5),
+            ),
+            Meal(
+              id: 4,
+              name: 'Dîner',
+              type: 'DINNER',
+              calories: 750,
+              macro: const Macro(proteins: 35, carbs: 65, fats: 25),
+            ),
+          ],
+        );
+        _loading = false;
+      });
+      return;
+    }
+    
     setState(() => _loading = true);
     final user = context.read<AuthProvider>().user;
     if (user == null) {

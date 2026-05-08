@@ -6,6 +6,7 @@ import '../../../../features/auth/providers/auth_provider.dart';
 import '../../../../shared/widgets/gym_badge.dart';
 import '../models/course.dart';
 import '../services/course_service.dart';
+import '../../../../features/auth/providers/auth_provider.dart' show TEST_MODE;
 
 class CoursesScreen extends StatefulWidget {
   const CoursesScreen({super.key});
@@ -50,6 +51,70 @@ class _CoursesScreenState extends State<CoursesScreen> with SingleTickerProvider
 
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
+    
+    // Test mode: load mock courses
+    if (TEST_MODE) {
+      _courses = [
+        Course(
+          id: 1,
+          name: 'Yoga Avancé',
+          dayOfWeek: 'MONDAY',
+          startTime: '18:00',
+          endTime: '19:00',
+          coachName: 'Marie Dupont',
+          location: 'Salle A',
+          maxParticipants: 15,
+          currentParticipants: 12,
+        ),
+        Course(
+          id: 2,
+          name: 'HIIT Training',
+          dayOfWeek: 'TUESDAY',
+          startTime: '19:00',
+          endTime: '20:00',
+          coachName: 'Jean Martin',
+          location: 'Salle B',
+          maxParticipants: 20,
+          currentParticipants: 18,
+        ),
+        Course(
+          id: 3,
+          name: 'Pilates',
+          dayOfWeek: 'WEDNESDAY',
+          startTime: '08:00',
+          endTime: '09:00',
+          coachName: 'Sophie Bernard',
+          location: 'Salle A',
+          maxParticipants: 10,
+          currentParticipants: 8,
+        ),
+        Course(
+          id: 4,
+          name: 'CrossFit',
+          dayOfWeek: 'THURSDAY',
+          startTime: '18:30',
+          endTime: '19:30',
+          coachName: 'Pierre Leroy',
+          location: 'Salle C',
+          maxParticipants: 25,
+          currentParticipants: 25,
+        ),
+        Course(
+          id: 5,
+          name: 'Zumba',
+          dayOfWeek: 'FRIDAY',
+          startTime: '17:00',
+          endTime: '18:00',
+          coachName: 'Claire Moreau',
+          location: 'Salle B',
+          maxParticipants: 30,
+          currentParticipants: 22,
+        ),
+      ];
+      setState(() => _loading = false);
+      return;
+    }
+    
     try {
       _courses = await _service.getCourses();
       setState(() => _loading = false);

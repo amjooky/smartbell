@@ -7,6 +7,9 @@ import '../services/auth_service.dart';
 
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
+// Test mode flag - set to true to bypass authentication for testing
+const bool TEST_MODE = true;
+
 class AuthProvider extends ChangeNotifier {
   final AuthService _service = AuthService();
 
@@ -25,6 +28,21 @@ class AuthProvider extends ChangeNotifier {
   bool get isMember      => _user?.isMember ?? false;
 
   Future<void> tryAutoLogin() async {
+    // Test mode: auto-authenticate with mock user
+    if (TEST_MODE) {
+      _user = AuthResponse(
+        id: 1,
+        email: 'test@smartbell.com',
+        firstName: 'Test',
+        lastName: 'User',
+        role: 'ROLE_MEMBER',
+        token: 'mock_token_for_testing',
+      );
+      _status = AuthStatus.authenticated;
+      notifyListeners();
+      return;
+    }
+
     final token   = await SecureStorage.getToken();
     final userStr = await SecureStorage.getUser();
     if (token != null && userStr != null) {
